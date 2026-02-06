@@ -1,18 +1,22 @@
-const fakeAuth = (req,res,next) => {
+const jwt = require ("jsonwebtoken");
 
+const authMiddleware = (req,res,next)=>{
     const authHeader = req.headers.authorization;
 
-    console.log ("Header Objects",req.headers );
-    console.log ("Auth Header",authHeader );
-
-
-//expecting authorisation bearer faketokens
-    if (!authHeader|| authHeader!== "Bearer faketoken"){
-        return res.status(401).json({message:"unauthorised"});
+    if (!authHeader || !authHeader.startsWith("Bearer ")){
+        return res.status(401).json({message:"No token provided"});
     }
+    const token = authHeader.split("")[1];
 
-    next() //allows request to continue
+    try {
+        const decoded =jwt.verify(token, process.env.JWT_SECRET);
+        req.user = decoded;
+        next();
 
+    } catch (error) {
+        return res.status(401).json({message:"Invalid or expired token"});
+        
+    }
 }
 
-module.exports = fakeAuth;
+module.exports =authMiddleware;
