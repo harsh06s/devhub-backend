@@ -1,31 +1,76 @@
 const bcrypt = require("bcryptjs");
-
+const pool = require("../config/db.js")
 const generateToken = require("../utils/jwt.js");
 
-//fake users for now
+
+exports.signup = async(req,res) =>{
+    try{
+        const {email,password} = req.body;
+        //1. user.exists?
+        const existingUser = await pool.query(
+            "SELECT id FROM users WHERE emails=$1",
+            [email]
+        );
+        if (existingUser){
+            return res.status(401).json({message:"User already exists"});
+        }
+
+        //2.Hsh password
+        const hashedPassword = await bcrypt.hash(password,10);
+
+        //3.save user 
+        await pool.query(
+            "INSERT INTO users (email,password)VALUES =($1,$2)",
+            [email,hashedPassword]
+        )
+        res.status(201).json({ message: "User created" });
+    }
+    catch (err){
+        console.error("signup error=", err.message);
+        res.status(500).json({message:"Signup failed",
+            error:err.message,
+
+        })
+    }
+};
+
+/*fake users for now
 const user = {
     id : "123",
     email : "test@gmail.com",
     password : bcrypt.hashSync("123456",10)
-}
+}*/
 
 exports.login = async(req,res) => {
-    const {email, password} = req.body;
-    if (email !==user.email){
-        return res.status(401).json({message :"invalid credential"})
+    try {
+        const {email, password} = req.body;
+
+        //1.find user
+        const result = await pool.query(
+            "SELECT * FROM users WHERE email = $1",
+            [email],
+        )
+        if (result.rowCount.length === 0){
+            return res.status(401).json({message :"invalid credential"})
+        }
+
+        const user =result.rows[0];
+        
+        //2. compare password
+        const isMatch = await bcrypt.compare (password, user.password);
+
+        if (!isMatch){
+            return res.status("401").json({message: "Invalid credentials"})
+        }  
+        
+        //3. generate token
+        const token = generateToken({
+            userId: user.id,
+            email:user.email
+        })
+
+        res.json({token})
+    } catch(err){
+        res.status(500).json({message:"Login failed"})
     }
-
-    const isMatch = await bcrypt.compare (password, user.password);
-
-    if (!isMatch){
-        return res.status("401").json({message: "Invalid credentials"})
-    }
-
-    const token = generateToken({
-        userId: user.id,
-        email:user.email
-    })
-
-    res.json({token})
-
 }
