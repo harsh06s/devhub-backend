@@ -7,11 +7,11 @@ exports.signup = async(req,res) =>{
     try{
         const {email,password} = req.body;
         //1. user.exists?
-        const existingUser = await pool.query(
-            "SELECT id FROM users WHERE emails=$1",
+        const result = await pool.query(
+            "SELECT id FROM users WHERE email =$1",
             [email]
         );
-        if (existingUser){
+        if (result.rows.length > 0){
             return res.status(401).json({message:"User already exists"});
         }
 
@@ -20,17 +20,13 @@ exports.signup = async(req,res) =>{
 
         //3.save user 
         await pool.query(
-            "INSERT INTO users (email,password)VALUES =($1,$2)",
+            "INSERT INTO users (email,password)VALUES ($1,$2)",
             [email,hashedPassword]
         )
         res.status(201).json({ message: "User created" });
     }
     catch (err){
-        console.error("signup error=", err.message);
-        res.status(500).json({message:"Signup failed",
-            error:err.message,
-
-        })
+        res.status(500).json({message:"Signup failed" })
     }
 };
 

@@ -1,4 +1,4 @@
-require("dotenv").config();
+require("./config/db")
 const express= require('express');
 
 const authRoutes = require("./routes/auth.routes.js")
@@ -21,6 +21,9 @@ app.use("/api",healthRoutes)
 app.use("/api", userRoutes)
 
 app.use("/api", authRoutes)
+
+//oa soir a
+console.log("App booted");
 
 
 app.get ("/test", (req,res)=>{
