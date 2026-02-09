@@ -3,6 +3,12 @@ const pool = require("../config/db.js")
 const generateToken = require("../utils/jwt.js");
 
 
+// SIGNUP FLOW
+// 1. Check if email already exists
+// 2. Hash password using bcrypt
+// 3. Insert user into PostgreSQL
+
+
 exports.signup = async(req,res) =>{
     try{
         const {email,password} = req.body;

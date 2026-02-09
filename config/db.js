@@ -1,3 +1,5 @@
+// PostgreSQL connection using peer authentication (local development)
+
 const {Pool} = require("pg");
 
 const pool = new Pool ({
