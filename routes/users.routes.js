@@ -1,10 +1,10 @@
 const express = require ("express");
 
-const authMiddleware = require("../middlewares/auth.middleware.js")
+const {protect} = require("../middlewares/auth.middleware.js")
 
 const router = express.Router();
 
-router.get("/profile",authMiddleware, (req,res)=>{
+router.get("/profile",protect, (req,res)=>{
     res.json( {message:"Protected profile",
         user: req.user,
     })

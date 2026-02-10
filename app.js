@@ -1,3 +1,4 @@
+require("dotenv").config();
 require("./config/db")
 const express= require('express');
 
@@ -21,9 +22,6 @@ app.use("/api",healthRoutes)
 app.use("/api", userRoutes)
 
 app.use("/api", authRoutes)
-
-//oa soir a
-console.log("App booted");
 
 
 app.get ("/test", (req,res)=>{

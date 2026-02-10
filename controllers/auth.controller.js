@@ -52,7 +52,7 @@ exports.login = async(req,res) => {
             "SELECT * FROM users WHERE email = $1",
             [email],
         )
-        if (result.rowCount.length === 0){
+        if (result.rows.length === 0){
             return res.status(401).json({message :"invalid credential"})
         }
 
@@ -72,7 +72,12 @@ exports.login = async(req,res) => {
         })
 
         res.json({token})
-    } catch(err){
-        res.status(500).json({message:"Login failed"})
-    }
+    } catch (err) {
+  console.error("LOGIN ERROR 👉", err);
+  return res.status(500).json({
+    message: "Login failed",
+    error: err.message,
+  });
 }
+
+    }
