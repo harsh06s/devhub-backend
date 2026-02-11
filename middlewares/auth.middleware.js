@@ -4,6 +4,8 @@ exports.protect = (req,res,next) =>{
 
     try {
     const authHeader = req.headers.authorization;
+    console.log("Authorization header:", req.headers.authorization);
+    console.log("Extracted token:", token);
 
     //1. token existance
     if (!authHeader || !authHeader.startsWith("Bearer ")){
@@ -21,10 +23,16 @@ exports.protect = (req,res,next) =>{
     
     next();
 
-    } catch (error) {
+    }catch (err) {
+  console.log("JWT VERIFY ERROR ", err.message);
+  return res.status(401).json({ message: err.message });
+}
+
+    
+    /*catch (error) {
         return res.status(401).json({message:"Invalid or expired token"});
         
-    }
+    }*/
 }
 
 //module.exports =authMiddleware;

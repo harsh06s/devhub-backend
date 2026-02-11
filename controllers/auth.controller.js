@@ -46,20 +46,27 @@ const user = {
 exports.login = async(req,res) => {
     try {
         const {email, password} = req.body;
+        //console.log("EMAIL FROM BODY:", email);
 
         //1.find user
         const result = await pool.query(
             "SELECT * FROM users WHERE email = $1",
             [email],
         )
+
+        //console.log("DB RESULT:", result.rows);
+
         if (result.rows.length === 0){
-            return res.status(401).json({message :"invalid credential"})
+            return res.status(401).json({message :"invalid  lalala credential"})
         }
 
         const user =result.rows[0];
         
         //2. compare password
         const isMatch = await bcrypt.compare (password, user.password);
+
+
+        console.log("Match result:", isMatch);       //extra addition
 
         if (!isMatch){
             return res.status("401").json({message: "Invalid credentials"})
@@ -70,6 +77,8 @@ exports.login = async(req,res) => {
             userId: user.id,
             email:user.email
         })
+
+
 
         res.json({token})
     } catch (err) {
