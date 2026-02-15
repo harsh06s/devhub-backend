@@ -36,25 +36,16 @@ exports.signup = async(req,res) =>{
     }
 };
 
-/*fake users for now
-const user = {
-    id : "123",
-    email : "test@gmail.com",
-    password : bcrypt.hashSync("123456",10)
-}*/
 
 exports.login = async(req,res) => {
     try {
         const {email, password} = req.body;
-        //console.log("EMAIL FROM BODY:", email);
-
+        
         //1.find user
         const result = await pool.query(
             "SELECT * FROM users WHERE email = $1",
             [email],
         )
-
-        //console.log("DB RESULT:", result.rows);
 
         if (result.rows.length === 0){
             return res.status(401).json({message :"invalid  lalala credential"})
@@ -82,7 +73,6 @@ exports.login = async(req,res) => {
 
         res.json({token})
     } catch (err) {
-  console.error("LOGIN ERROR 👉", err);
   return res.status(500).json({
     message: "Login failed",
     error: err.message,
