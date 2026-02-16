@@ -3,9 +3,9 @@
 const {Pool} = require("pg");
 
 const pool = new Pool ({
-    user:"harsh",
-    database:"authdb",
-    host:"/var/run/postgresql",
+    user: process.env.DATABASE_USER,
+    database: process.env.DATABASE_DB,
+    host: process.env.DATABASE_HOST,
 });
 
 

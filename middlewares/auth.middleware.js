@@ -15,7 +15,7 @@ exports.protect = (req,res,next) =>{
     const token = authHeader.split(" ")[1];
     
     // token verification
-    const decoded =jwt.verify(token, "DAY14_SECRET");
+    const decoded =jwt.verify(token, process.env.JWT_SECRET);
         
     //4.put decoded data in request
     req.user = decoded;
