@@ -6,12 +6,14 @@ const validate = (schema) =>(req,res,next) =>{
         });
         next();
 
-    } catch (error) {
+    } catch (err) {
         // If invalid, return a 400 error with the specific Zod messages
+        console.error("Validation Middleware Error:", err);
         return res.status(400).json({
             status: "fail",
-            errors: err.error.map(e =>({ field: e.path[1], message: e.message}))
+            //errors: err.errors.map(e =>({ field: e.path[e.path.length - 1], message: e.message}))
         });
+        
         
     }
 }

@@ -17,9 +17,13 @@ exports.signup = async(req,res) =>{
             "SELECT id FROM users WHERE email =$1",
             [email]
         );
-        if (result.rows.length > 0){
-            return res.status(401).json({message:"User already exists"});
-        }
+
+        console.log("uo ei login chaling");
+
+        console.log("SECRET KEY USED:", process.env.JWT_SECRET);
+       // if (result.rows.length > 0){
+       //     return res.status(401).json({message:"User already exists"});
+       // }
 
         //2.Hsh password
         const hashedPassword = await bcrypt.hash(password,10);
@@ -47,9 +51,9 @@ exports.login = async(req,res) => {
             [email],
         )
 
-        if (result.rows.length === 0){
-            return res.status(401).json({message :"invalid  lalala credential"})
-        }
+        //if (result.rows.length === 0){
+        //    return res.status(401).json({message :"invalid  lalala credential"})
+        //}
 
         const user =result.rows[0];
         
