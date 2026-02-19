@@ -11,10 +11,10 @@ const signupSchema = z.object({
 });
 
 const loginSchema = z.object ({
-    body :({
+    body : z.object({
         email: z.string().email("Invalid email format"),
         password: z.string().min(1,"Password must be at least 6 charachters")
     }),
 });
 
-module.exports = {signupSchema,loginSchema}
+module.exports = {signupSchema,loginSchema};
