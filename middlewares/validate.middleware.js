@@ -1,4 +1,5 @@
 const validate = (schema) =>(req,res,next) =>{
+    console.log("WHAT IS IN REQ.BODY?? ->", req.body); // ADDED
     try {
         // .parse() checks the data. If it fails, it throws an error.
         schema.parse({
