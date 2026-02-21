@@ -1,6 +1,9 @@
 const bcrypt = require("bcryptjs");
 const pool = require("../config/db.js")
 const generateToken = require("../utils/jwt.js");
+const catchAsync = require("../utils/catchAsync.js");
+const ApiError = require("../utils/ApiError.js");
+
 
 
 // SIGNUP FLOW
@@ -9,40 +12,39 @@ const generateToken = require("../utils/jwt.js");
 // 3. Insert user into PostgreSQL
 
 
-exports.signup = async(req,res) =>{
-    try{
+exports.signup = catchAsync(async(req,res) =>{
+   
         const {email,password} = req.body;
         //1. user.exists?
         const result = await pool.query(
-            "SELECT id FROM users WHERE email =$1",
+            "SELEC id FROM users WHERE email =$1",        ///mwommjmao
             [email]
         );
 
-        console.log("uo ei login chaling");
-
         console.log("SECRET KEY USED:", process.env.JWT_SECRET);
-       // if (result.rows.length > 0){
-       //     return res.status(401).json({message:"User already exists"});
-       // }
+        if (result.rows.length > 0){
+          //return res.status(401).json({message:"User already exists"});  early one
+          
+          return next(new ApiError(400, "User already exists with this email"))
+       }
 
         //2.Hsh password
-        const hashedPassword = await bcrypt.hash(password,10);
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(password, salt);
 
         //3.save user 
         await pool.query(
             "INSERT INTO users (email,password)VALUES ($1,$2)",
             [email,hashedPassword]
         )
-        res.status(201).json({ message: "User created" });
-    }
-    catch (err){
-        res.status(500).json({message:"Signup failed" })
-    }
-};
+        res.status(201).json({ 
+            status: "Sucess",
+            message: "User created" });
+    });
 
 
-exports.login = async(req,res) => {
-    try {
+exports.login = catchAsync(async(req,res) => {
+   
         const {email, password} = req.body;
         
         //1.find user
@@ -64,7 +66,8 @@ exports.login = async(req,res) => {
         console.log("Match result:", isMatch);       //extra addition
 
         if (!isMatch){
-            return res.status("401").json({message: "Invalid credentials"})
+            //return res.status("401").json({message: "Invalid credentials"})
+            return next(new ApiError(401, "Invalid email or password"));
         }  
         
         //3. generate token
@@ -76,11 +79,11 @@ exports.login = async(req,res) => {
 
 
         res.json({token})
-    } catch (err) {
-  return res.status(500).json({
-    message: "Login failed",
-    error: err.message,
-  });
-}
+    
+        return res.status(200).json({
+            message: "sucess",
+            message: "Login successful",
+            token
+        });
 
-    }
+    })

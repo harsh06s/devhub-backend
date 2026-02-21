@@ -12,6 +12,7 @@ const userRoutes = require("./routes/users.routes.js");
 
 //Middlewares
 const loggermiddleware = require("./middlewares/logger.middleware.js");
+const errorMiddleware = require("./middlewares/error.middleware.js");
 
 app.use(express.json());
 
@@ -23,6 +24,7 @@ app.use("/api", userRoutes)
 
 app.use("/api", authRoutes)
 
+app.use(errorMiddleware)
 
 app.get ("/test", (req,res)=>{
     res.send("TEST OK")
